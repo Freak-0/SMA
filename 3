@@ -1,0 +1,46 @@
+##Use facebook data for data cleaning
+import pandas as pd
+import numpy as np
+import seaborn as sn
+df = pd.read_csv("/content/facebook.csv")
+df.head()
+
+##Find Null values
+df.replace(['N/A', 'na', 'NaN'], np.nan, inplace= True)
+data = df.isnull()
+data.head()
+
+##Show in heatmap
+hm = sn.heatmap(data = data)
+
+##Fill null values by 0
+data = df.fillna(0)
+data.head()
+
+##Fill null values by particular values
+data = df.fillna(100)
+data.head()
+
+##Fill null values by forward fill method
+data = df.ffill()
+data.head()
+
+##Fill null values by backward fill method
+data = df.bfill()
+data.head()
+
+##Fill null values by interpolation
+data = df.interpolate()
+data.head()
+
+##Drop null value
+data = df.dropna()
+data.head()
+
+##Drop null values only if entire row is null
+data = df.dropna(how = 'all')
+data.head()
+
+##Drop duplicate values
+data = df.drop_duplicates()
+data.head()
