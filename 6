@@ -1,0 +1,52 @@
+##To Develop Structure based social media analytics model for any business.
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+df = pd.read_csv("/content/pseudo_facebook.csv")
+
+# Create a graph with gender and age attributes
+G = nx.from_pandas_edgelist(df, source='gender', target='age')
+
+# Display all nodes
+print("All nodes:", G.nodes())
+
+# Display all edges
+G.edges()
+
+# Add a new node to the graph
+G.add_node("tenure")
+
+# Display the graph
+plt.figure(figsize=(10, 8))
+pos = nx.spring_layout(G, k=0.15)
+nx.draw(G, pos, with_labels=True)
+plt.title("Gender-Age Graph")
+plt.axis('off')
+plt.show()
+
+# Find degree of each node
+print("Degree of each node:", dict(G.degree()))
+
+# Find degree centrality of each node
+print("Degree centrality of each node:", nx.degree_centrality(G))
+
+# Find the most influential node
+print("Most influential node:", max(nx.degree_centrality(G), key=nx.degree_centrality(G).get))
+
+# Find the closeness centrality of the network
+print("Closeness centrality:", nx.closeness_centrality(G))
+
+# Check whether the network has a bridge
+print("Does the network have a bridge?", nx.has_bridges(G))
+
+# Find the length of the bridge
+if nx.has_bridges(G):
+    print("Length of bridge:", len(list(nx.bridges(G))[0]))
+
+# Find clusters in the network
+clusters = nx.connected_components(G)
+print("Clusters in the network:", list(clusters))
+
+# Check if the graph is complete
+is_complete = nx.is_connected(G) and len(G.edges()) == len(G.nodes()) * (len(G.nodes()) - 1) / 2
+print("Is the graph complete?", is_complete)
