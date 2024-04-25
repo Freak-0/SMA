@@ -20,6 +20,7 @@ df.head()
 df.info()
 
 # Check for missing values
+newdf=df.isnull()
 df.isnull().sum()
 
 # Descriptive statistics with describe() function
@@ -37,7 +38,7 @@ df.hist(figsize=(10, 10))
 plt.show()
 
 # Correlation matrix
-correlation_matrix = df.corr()
+correlation_matrix = newdf.corr()
 sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
 plt.title('Correlation Matrix')
 plt.show()
