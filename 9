@@ -1,4 +1,3 @@
-##Analyze competitor activities using social media data.
 import pandas as pd
 import matplotlib.pyplot as plt
 from textblob import TextBlob
@@ -24,31 +23,21 @@ for summ in summary:
   sentiment_list.append(sentiment)
   print(f"{summ}.{sentiment}")
 
-# Split the dataset into Brand 1 and Brand 2 data
-brand1_data = data.iloc[1:1044]  # Rows 2 to 1044
-brand2_data = data.iloc[1045:1750]  # Rows 1045 to 1750
+brand1_data = data.iloc[1:1044]
+brand2_data = data.iloc[1045:1750]
 
 brand1_sentiments = [TextBlob(summary).sentiment.polarity for summary in brand1_data['Summary']]
-# Counting positive, negative, and neutral sentiments for Brand 1
-brand1_positive_summaries = sum(1 for sentiment in brand1_sentiments if sentiment > 0)
-brand1_negative_summaries = sum(1 for sentiment in brand1_sentiments if sentiment < 0)
-brand1_neutral_summaries = sum(1 for sentiment in brand1_sentiments if sentiment == 0)
-
 brand2_sentiments = [TextBlob(summary).sentiment.polarity for summary in brand2_data['Summary']]
-# Counting positive, negative, and neutral sentiments for Brand 2
-brand2_positive_summaries = sum(1 for sentiment in brand2_sentiments if sentiment > 0)
-brand2_negative_summaries = sum(1 for sentiment in brand2_sentiments if sentiment < 0)
-brand2_neutral_summaries = sum(1 for sentiment in brand2_sentiments if sentiment == 0)
 
-# Define the brand names
 brand_names = ['Brand 1', 'Brand 2']
 
-# Store sentiment counts in respective dictionaries
-positive_ratings = {'Brand 1': brand1_positive_summaries, 'Brand 2': brand2_positive_summaries}
-negative_ratings = {'Brand 1': brand1_negative_summaries, 'Brand 2': brand2_negative_summaries}
-neutral_ratings = {'Brand 1': brand1_neutral_summaries, 'Brand 2': brand2_neutral_summaries}
+positive_ratings = {'Brand 1': sum(1 for sentiment in brand1_sentiments if sentiment > 0), 
+                    'Brand 2': sum(1 for sentiment in brand2_sentiments if sentiment > 0)}
+negative_ratings = {'Brand 1': sum(1 for sentiment in brand1_sentiments if sentiment < 0), 
+                    'Brand 2': sum(1 for sentiment in brand2_sentiments if sentiment < 0)}
+neutral_ratings = {'Brand 1': sum(1 for sentiment in brand1_sentiments if sentiment == 0), 
+                   'Brand 2': sum(1 for sentiment in brand2_sentiments if sentiment == 0)}
 
-# Plot the grouped bar chart
 bar_width = 0.2
 index = np.arange(len(brand_names))
 
@@ -63,24 +52,19 @@ plt.xticks(index + bar_width, brand_names)
 plt.legend()
 plt.show()
 
-# Counting the occurrences of each rating for Brand 1
 brand1_ratings_counts = brand1_data['Rate'].value_counts().sort_index()
-
-# Counting the occurrences of each rating for Brand 2
 brand2_ratings_counts = brand2_data['Rate'].value_counts().sort_index()
 
 # Function to plot stacked ratings
 def plot_stacked_ratings(brand_names, brand_ratings_counts):
-    ratings = range(1, 6)  # Ratings from 1 to 5
+    ratings = range(1, 6)
 
-    # Normalize the ratings counts to percentages for each brand
     total_ratings = [sum(counts) for counts in brand_ratings_counts]
     brand_ratings_percentages = [[count / total * 100 for count in counts] for counts, total in zip(brand_ratings_counts, total_ratings)]
 
-    # Plotting the stacked bar graph
-    plt.figure(figsize=(8, 6))  # Adjust figure size as needed
+    plt.figure(figsize=(8, 6))
     bottom = [0] * len(brand_names)
-    colors = ['red', 'green', 'blue', 'orange', 'purple']  # Different colors for each rating
+    colors = ['red', 'green', 'blue', 'orange', 'purple']
 
     for i, brand_name in enumerate(brand_names):
         for rating, percentages, color in zip(ratings, brand_ratings_percentages[i], colors):
@@ -91,29 +75,21 @@ def plot_stacked_ratings(brand_names, brand_ratings_counts):
     plt.ylabel('Percentage')
     plt.title('Rating Distribution for Brands')
 
-    # Custom legend with specified colors
-    legend_colors = [plt.bar(0, 0, color=color)[0] for color in colors]  # Create dummy bars for legend
+    legend_colors = [plt.bar(0, 0, color=color)[0] for color in colors]
     plt.legend(legend_colors, [f'Rating {rating}' for rating in ratings], title='Ratings', loc='upper right')
-
-    plt.xticks(range(len(brand_names)), brand_names)  # Set x-axis labels to brand names
-
-    plt.ylim(0, 100)  # Set y-axis limit to 0-100%
+    plt.xticks(range(len(brand_names)), brand_names)
+    plt.ylim(0, 100)
     plt.show()
 
-# Example data for Brand 1 and Brand 2
 brand_names = ["Brand 1", "Brand 2"]
 brand_ratings_counts = [brand1_ratings_counts, brand2_ratings_counts]
 
 plot_stacked_ratings(brand_names, brand_ratings_counts)
 
 
-# Extracting product prices for Brand 1 (row 4)
-brand1_price = data.iloc[3]['product_price']  # Assuming row index starts from 0
+brand1_price = data.iloc[3]['product_price']
+brand2_price = data.iloc[1046]['product_price']
 
-# Extracting product prices for Brand 2 (row 294)
-brand2_price = data.iloc[1046]['product_price']  # Assuming row index starts from 0
-
-# Plotting the bar chart
 brands = ['Brand 1', 'Brand 2']
 prices = [brand1_price, brand2_price]
 
@@ -121,7 +97,6 @@ plt.bar(brands, prices, color=['blue', 'green'])
 plt.xlabel('Brand')
 plt.ylabel('Price')
 plt.title('Price Comparison between Brand 1 and Brand 2')
-# Add legends
 for brand, price in zip(brands, prices):
     plt.text(brand, price, str(price), ha='center', va='bottom')
 plt.show()
