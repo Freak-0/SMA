@@ -1,0 +1,13 @@
+import requests
+
+video_id = "YqKYpgZ9FWU" ##
+api_key = "AIzaSyBQNf5-asyWvImw951Ncs38S-Rf8VbY4NA" ##
+
+comments_url = f"https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId={video_id}&key={api_key}"
+
+comments_response = requests.get(comments_url)
+comments_data = comments_response.json()
+comments_data
+
+comments = [item["snippet"]["topLevelComment"]["snippet"]["textOriginal"] for item in comments_data["items"]]
+comments
