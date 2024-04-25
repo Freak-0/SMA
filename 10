@@ -1,1 +1,77 @@
 ##Develop social media text analytics models for improving existing product/ service
+import pandas as pd
+import matplotlib.pyplot as plt
+from textblob import TextBlob
+from wordcloud import WordCloud
+
+file_path = '/content/Data.csv'
+data = pd.read_csv(file_path)
+summarys=data.Summary
+
+def get_summary_sentiment(summarys):
+  analysis=TextBlob(summarys)
+  if analysis.sentiment.polarity>0:
+    return "positive"
+  elif analysis.sentiment.polarity==0:
+    return "neutral"
+  else:
+    return "negative"
+
+summary_list=[]
+sentiment_list=[]
+for summary in summarys:
+  sentiment=get_summary_sentiment(summary)
+  summary_list.append(summary)
+  sentiment_list.append(sentiment)
+  print(f"{summary}.{sentiment}")
+
+df = pd.DataFrame({'Summary': summary_list, 'sentiment': sentiment_list, 'Rating':data.Rate})
+df
+
+negative_df = df[df['sentiment'] == 'negative']
+negative_df
+
+rategreater1_df = negative_df[negative_df['Rating'] > 1]
+rategreater1_df
+
+rategreater3_df = rategreater1_df[rategreater1_df['Rating'] > 3]
+rategreater3_df
+
+# Example negative sentiment summaries (replace this with your actual data)
+negative_summaries=rategreater3_df.Summary
+
+
+# Join all negative summaries into a single string
+negative_text = ' '.join(negative_summaries)
+
+# Create a word cloud object
+wordcloud = WordCloud(width=800, height=400, background_color='white', colormap='RdYlBu').generate(negative_text)
+
+# Display the word cloud
+plt.figure(figsize=(10, 5))
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis('off')
+plt.show()
+
+from collections import Counter
+
+# Define aspects to extract
+aspects = ['quality', 'look', 'speed', 'performance', 'display', 'design']
+
+# Function to count occurrences of aspects in text
+def count_aspects(text, aspects):
+    aspect_counts = Counter()
+    for aspect in aspects:
+        if aspect in text.lower():
+            aspect_counts[aspect] += 1
+    return aspect_counts
+
+# Extract aspects from negative sentiment summaries
+aspect_counts = Counter()
+for summary in rategreater1_df['Summary']:
+    aspect_counts += count_aspects(summary, aspects)
+
+# Print aspect extraction results
+print("\nAspect Extraction:")
+for aspect, count in aspect_counts.items():
+    print(f"{aspect.capitalize()}: {count}")
