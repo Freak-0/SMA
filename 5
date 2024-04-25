@@ -1,0 +1,36 @@
+##To develop content based social media analytics model for buiseness
+import requests
+import pandas as pd
+from textblob import TextBlob
+
+# Define the video ID and API key
+video_id = "bw7bVpI5VcM"
+api_key = "AIzaSyA4H1q5SgAzXYcC951PLVDf-bX6VIMGgtA"  # Replace with your actual API key
+
+# Retrieve comments for the video
+comments_url = f"https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId={video_id}&key={api_key}"
+comments_response = requests.get(comments_url)
+comments_data = comments_response.json()
+
+    # Extract comments from the response
+comments = [item["snippet"]["topLevelComment"]["snippet"]["textOriginal"] for item in comments_data["items"]]
+
+    # Analyze sentiment for each comment and append to list
+comments_sentiments = [{'Comment': comm, 'Sentiment': get_comment_sentiment(comm)} for comm in comments]
+
+    # Create DataFrame from list of dictionaries
+df = pd.DataFrame(comments_sentiments)
+
+    # Save the DataFrame to a CSV file
+df.to_csv("youtube_sentiment_analysis.csv", index=False)
+
+# Function to get sentiment of a comment
+def get_comment_sentiment(comm):
+    analysis = TextBlob(comm)
+    polarity = analysis.sentiment.polarity
+    if polarity > 0:
+        return "Positive"
+    elif polarity == 0:
+        return "Neutral"
+    else:
+        return "Negative"
